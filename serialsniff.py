@@ -154,12 +154,12 @@ def sniffer_log_thread_fn(data_queue, columns, out_file=None):
 def main():
     try:
         parser = argparse.ArgumentParser()
-        parser.add_argument("port", type=str)
-        parser.add_argument("baudrate", type=int)
-        parser.add_argument("--outgoing", "-o", action="store_true")
-        parser.add_argument("--incoming", "-i", action="store_true")
-        parser.add_argument("--file", "-f", type=argparse.FileType("w"))
-        parser.add_argument("--columns", type=int, default=8)
+        parser.add_argument("port", type=str, help="serial port to sniff")
+        parser.add_argument("baudrate", type=int, help="baudrate of the serial port to sniff")
+        parser.add_argument("--incoming", "-i", action="store_true", help="sniff incoming (from host to serial device) transfers")
+        parser.add_argument("--outgoing", "-o", action="store_true", help="sniff outgoing (from serial device to host) transfers")
+        parser.add_argument("--file", "-f", type=argparse.FileType("w"), help="file to write the sniffed transfers to")
+        parser.add_argument("--columns", type=int, default=8, help="how many columns of characters to display per line")
 
         args = parser.parse_args()
 
