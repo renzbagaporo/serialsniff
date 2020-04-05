@@ -5,12 +5,12 @@
 
 import serial
 import os
-import enum
 import threading
 import select
 import queue
 import argparse
 
+from enum import IntEnum
 from datetime import datetime
 
 
@@ -19,12 +19,12 @@ class SerialSniff(threading.Thread):
     DEFAULT_TIMEOUT = 1000
     DEFAULT_MAX_DATA_LEN = 1024
 
-    class Mode(enum.Enum):
+    class Mode(IntEnum):
         INCOMING_ONLY = 1
         OUTGOING_ONLY = 2
         BIDIRECTIONAL = 3
 
-    class Direction(enum.Enum):
+    class Direction(IntEnum):
         INCOMING = 1
         OUTGOING = 2
 
@@ -36,7 +36,7 @@ class SerialSniff(threading.Thread):
 
     def _output_data_to_queue(self, data, direction):
         if self.mode == SerialSniff.Mode.BIDIRECTIONAL or \
-           self.mode == direction:
+           int(self.mode) == int(direction):
             self.data_queue.put(SerialSniff.Data(data, direction))
 
     def _incoming_data_thread_fn(self):
