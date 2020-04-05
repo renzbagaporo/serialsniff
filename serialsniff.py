@@ -105,7 +105,18 @@ class SerialSniff(threading.Thread):
         os.close(self._pty_master)
 
 
-def sniffer_log_thread_fn(data_queue, columns):
+def output(s, e=None, f=None):
+    if not e == None:
+        print(s, end=e)
+    else:
+        print(s)
+
+    if f:
+        f.write(s + ("\r\n" if e == None else e))
+        f.flush()
+
+
+def sniffer_log_thread_fn(data_queue, columns, out_file=None):
     while True:
         data = data_queue.get()
 
@@ -116,7 +127,7 @@ def sniffer_log_thread_fn(data_queue, columns):
         data_len = len(data.data)
 
         details = "{} {} ({} bytes)".format(direction, timestamp, data_len)
-        print(details, end='')
+        output(details, '', f=out_file)
 
         start = 0
         data_bytes = data.data[start:start+columns]
@@ -129,15 +140,15 @@ def sniffer_log_thread_fn(data_queue, columns):
                                                         data_hex_str[1::2]))
 
             # 4 is worst case, ex: ctrl-z = \x1a
-            print("\t{} {}".format(data_str.ljust(columns * 4, ' '),
-                                   data_hex_str))
+            output("\t{} {}".format(data_str.ljust(columns * 4, ' '),
+                                   data_hex_str), f=out_file)
 
             start = start + columns
             data_bytes = data.data[start:start+columns]
 
-            print(" " * len(details), end='')
+            output(" " * len(details), '', f=out_file)
 
-        print("\r\n")
+        output("\r\n", f=out_file)
 
 
 def main():
@@ -147,6 +158,7 @@ def main():
         parser.add_argument("baudrate", type=int)
         parser.add_argument("--outgoing", "-o", action="store_true")
         parser.add_argument("--incoming", "-i", action="store_true")
+        parser.add_argument("--file", "-f", type=argparse.FileType("w"))
         parser.add_argument("--columns", type=int, default=8)
 
         args = parser.parse_args()
@@ -164,16 +176,17 @@ def main():
                                 args.baudrate,
                                 SerialSniff.Mode.OUTGOING_ONLY)
 
-        print("SerialSniff\r\n")
-        print("port:\t\t" + sniff.port)
-        print("baudrate:\t" + str(sniff.baud))
-        print("proxy:\t\t" + sniff.proxy)
+        output("SerialSniff\r\n", f=args.file)
+        output("port:\t\t" + sniff.port, f=args.file)
+        output("baudrate:\t" + str(sniff.baud), f=args.file)
+        output("proxy:\t\t" + sniff.proxy, f=args.file)
 
-        print("\r\n")
+        output("\r\n", f=args.file)
 
         sniffer_log_thread = threading.Thread(target=sniffer_log_thread_fn,
                                               args=(sniff.data_queue,
-                                                    args.columns),
+                                                    args.columns,
+                                                    args.file),
                                               daemon=True)
 
         sniffer_log_thread.start()
