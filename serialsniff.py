@@ -145,8 +145,8 @@ def main():
         parser = argparse.ArgumentParser()
         parser.add_argument("port", type=str)
         parser.add_argument("baudrate", type=int)
-        parser.add_argument("--outgoing", action="store_true")
-        parser.add_argument("--incoming", action="store_true")
+        parser.add_argument("--outgoing", "-o", action="store_true")
+        parser.add_argument("--incoming", "-i", action="store_true")
         parser.add_argument("--columns", type=int, default=8)
 
         args = parser.parse_args()
