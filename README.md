@@ -65,7 +65,7 @@ responses from the modem directly to `/dev/ttyUSB2`, it is connected to the prox
 
 #### Python
 
-`serialsniff.py` contains a `SerialSniff` class used to implement the command-line functionality.
+`serialsniff.py` contains a `SerialSniff` class used to implement the command-line functionality; which can be used in your own Python programs.
 
 ```python
 sniff = SerialSniff(args.port,                          # serial port to sniff
@@ -82,8 +82,6 @@ Some important members of the `SerialSniff` class are as follows:
 sniff.proxy                                             # proxy port where the host program should be connected instead
 sniff.data_queue                                        # Python queue where incoming/outgoing data is put whenever available
 ```
-
-The command-line interface is implemented using the `SerialSniff` class.
 
 ### Limitations
 
